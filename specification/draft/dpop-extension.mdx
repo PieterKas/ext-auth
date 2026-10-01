@@ -65,7 +65,7 @@ MCP servers MUST validate DPoP proofs according to [RFC 9449 Section 4.3](https:
 
 If any validation step fails, the MCP server MUST reject the request with an HTTP 401 response and include appropriate error information in the `WWW-Authenticate` header as specified in [RFC 9449 Section 7.1](https://datatracker.ietf.org/doc/html/rfc9449#section-7.1).
 
-When rejecting a request, the MCP server SHOULD use the `invalid_dpop_proof`error code for any failure of the [RFC 9449 Section 4.3](https://datatracker.ietf.org/doc/html/rfc9449#section-4.3) validation steps, including a malformed or duplicated `DPoP` header, and the `invalid_token` error code for failures of the access token itself ([RFC 6750 Section 3.1] https://datatracker.ietf.org/doc/html/rfc6750#section-3.1)).
+When rejecting a request, the MCP server SHOULD use the `invalid_dpop_proof` error code for any failure of the [RFC 9449 Section 4.3](https://datatracker.ietf.org/doc/html/rfc9449#section-4.3) validation steps, including a malformed or duplicated `DPoP` header, and the `invalid_token` error code for failures of the access token itself ([RFC 6750 Section 3.1](https://datatracker.ietf.org/doc/html/rfc6750#section-3.1)).
 
 ### Bearer Scheme Downgrade Protection
 
