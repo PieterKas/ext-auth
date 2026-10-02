@@ -106,6 +106,38 @@ Clients that exclusively use DPoP MAY indicate this through the `dpop_bound_acce
 
 When this field is set to `true`, the authorization server MUST reject token requests from the client that do not include a valid DPoP proof.
 
+## MCP Server DPoP Advertisement
+
+MCP clients need a way to learn that an MCP server supports or requires DPoP before presenting credentials. This section defines how MCP servers supporting this extension advertise that capability. The baseline MCP authorization discovery mechanisms (Protected Resource Metadata discovery via the `WWW-Authenticate` header or well-known URIs) are unchanged.
+
+### Protected Resource Metadata
+
+MCP servers supporting this extension MUST include the `dpop_signing_alg_values_supported` field in their Protected Resource Metadata ([RFC 9728 Section 2](https://datatracker.ietf.org/doc/html/rfc9728#section-2)). This field MUST contain a non-empty JSON array of registered JWS algorithm values (from the IANA JSON Web Signature and Encryption Algorithms registry) that the server accepts for DPoP proof JWTs. Only asymmetric digital signature algorithms are permitted. The `none` algorithm and symmetric (MAC) algorithms MUST NOT be included.
+
+An MCP server that requires DPoP-bound access tokens (that is, one that does not accept bearer tokens) MUST set the `dpop_bound_access_tokens_required` field to `true` in its Protected Resource Metadata. Conversely, an MCP server that sets `dpop_bound_access_tokens_required` to `true` MUST reject requests that do not present a DPoP-bound access token with a valid DPoP proof. When the field is absent, the default behavior defined in [RFC 9728](https://datatracker.ietf.org/doc/html/rfc9728) applies and DPoP-bound access tokens are not required.
+
+Example Protected Resource Metadata for a server that requires DPoP:
+
+```json
+{
+  "resource": "https://mcp.example.com/mcp",
+  "authorization_servers": ["https://auth.example.com"],
+  "dpop_signing_alg_values_supported": ["ES256", "PS256"],
+  "dpop_bound_access_tokens_required": true
+}
+```
+### WWW-Authenticate Challenge
+
+When responding to an unauthenticated or failed request with HTTP 401, an MCP server supporting this extension SHOULD include a `DPoP` challenge in the  `WWW-Authenticate` header, and that challenge SHOULD include the `algs` parameter signaling the JWS algorithms acceptable for DPoP proof JWTs, as described in [RFC 9449 Section 7.1](https://datatracker.ietf.org/doc/html/rfc9449#section-7.1). The `DPoP` challenge MAY appear alongside other challenges, such as a `Bearer` challenge carrying the `resource_metadata` parameter defined in [RFC 9728 Section 5.1](https://datatracker.ietf.org/doc/html/rfc9728#section-5.1).
+
+Example challenge:
+
+```
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: DPoP algs="ES256 PS256",
+  resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"
+```
+
 ## Examples
 
 ### Complete DPoP Proof Example
@@ -174,38 +206,6 @@ Content-Type: application/json
   "id": 1
 }
 
-```
-
-## MCP Server DPoP Advertisement
-
-MCP clients need a way to learn that an MCP server supports or requires DPoP before presenting credentials. This section defines how MCP servers supporting this extension advertise that capability. The baseline MCP authorization discovery mechanisms (Protected Resource Metadata discovery via the `WWW-Authenticate` header or well-known URIs) are unchanged.
-
-### Protected Resource Metadata
-
-MCP servers supporting this extension MUST include the `dpop_signing_alg_values_supported` field in their Protected Resource Metadata ([RFC 9728 Section 2](https://datatracker.ietf.org/doc/html/rfc9728#section-2)). This field MUST contain a non-empty JSON array of registered JWS algorithm values (from the IANA JSON Web Signature and Encryption Algorithms registry) that the server accepts for DPoP proof JWTs. Only asymmetric digital signature algorithms are permitted. The `none` algorithm and symmetric (MAC) algorithms MUST NOT be included.
-
-An MCP server that requires DPoP-bound access tokens (that is, one that does not accept bearer tokens) MUST set the `dpop_bound_access_tokens_required` field to `true` in its Protected Resource Metadata. Conversely, an MCP server that sets `dpop_bound_access_tokens_required` to `true` MUST reject requests that do not present a DPoP-bound access token with a valid DPoP proof. When the field is absent, the default behavior defined in [RFC 9728](https://datatracker.ietf.org/doc/html/rfc9728) applies and DPoP-bound access tokens are not required.
-
-Example Protected Resource Metadata for a server that requires DPoP:
-
-```json
-{
-  "resource": "https://mcp.example.com/mcp",
-  "authorization_servers": ["https://auth.example.com"],
-  "dpop_signing_alg_values_supported": ["ES256", "PS256"],
-  "dpop_bound_access_tokens_required": true
-}
-```
-### WWW-Authenticate Challenge
-
-When responding to an unauthenticated or failed request with HTTP 401, an MCP server supporting this extension SHOULD include a `DPoP` challenge in the  `WWW-Authenticate` header, and that challenge SHOULD include the `algs` parameter signaling the JWS algorithms acceptable for DPoP proof JWTs, as described in [RFC 9449 Section 7.1](https://datatracker.ietf.org/doc/html/rfc9449#section-7.1). The `DPoP` challenge MAY appear alongside other challenges, such as a `Bearer` challenge carrying the `resource_metadata` parameter defined in [RFC 9728 Section 5.1](https://datatracker.ietf.org/doc/html/rfc9728#section-5.1).
-
-Example challenge:
-
-```
-HTTP/1.1 401 Unauthorized
-WWW-Authenticate: DPoP algs="ES256 PS256",
-  resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"
 ```
 
 ## Security Considerations
