@@ -126,9 +126,10 @@ Example Protected Resource Metadata for a server that requires DPoP:
   "dpop_bound_access_tokens_required": true
 }
 ```
+
 ### WWW-Authenticate Challenge
 
-When responding to an unauthenticated or failed request with HTTP 401, an MCP server supporting this extension SHOULD include a `DPoP` challenge in the  `WWW-Authenticate` header, and that challenge SHOULD include the `algs` parameter signaling the JWS algorithms acceptable for DPoP proof JWTs, as described in [RFC 9449 Section 7.1](https://datatracker.ietf.org/doc/html/rfc9449#section-7.1). The `DPoP` challenge MAY appear alongside other challenges, such as a `Bearer` challenge carrying the `resource_metadata` parameter defined in [RFC 9728 Section 5.1](https://datatracker.ietf.org/doc/html/rfc9728#section-5.1).
+When responding to an unauthenticated or failed request with HTTP 401, an MCP server supporting this extension SHOULD include a `DPoP` challenge in the `WWW-Authenticate` header, and that challenge SHOULD include the `algs` parameter signaling the JWS algorithms acceptable for DPoP proof JWTs, as described in [RFC 9449 Section 7.1](https://datatracker.ietf.org/doc/html/rfc9449#section-7.1). The `DPoP` challenge MAY appear alongside other challenges, such as a `Bearer` challenge carrying the `resource_metadata` parameter defined in [RFC 9728 Section 5.1](https://datatracker.ietf.org/doc/html/rfc9728#section-5.1).
 
 Example challenge:
 
